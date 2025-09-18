@@ -30,9 +30,27 @@
       border-color: #5a67d8;
       box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.5);
       background-color: white;
+      position: relative;
+      z-index: 1;
     }
     select::-moz-focus-inner {
       border: 0;
+    }
+
+    /* Cải thiện hiệu ứng focus cho input, textarea, select */
+    input:focus, textarea:focus, select:focus {
+      outline: none;
+      box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.6);
+      border-color: #667eea;
+      position: relative;
+      z-index: 1;
+    }
+
+    /* Tối ưu trải nghiệm trên điện thoại */
+    button, input, select, textarea {
+      touch-action: manipulation;
+      -webkit-tap-highlight-color: transparent;
+      cursor: pointer;
     }
   </style>
 </head>
@@ -50,7 +68,7 @@
       <!-- Div thông báo mới -->
       <div id="formMessage" class="mb-4 text-center text-white font-semibold rounded-lg p-3 hidden"></div>
 
-      <form id="userForm" class="space-y-8" novalidate>
+      <form id="userForm" class="space-y-8" novalidate autocomplete="off">
         <div>
           <label for="name" class="block text-gray-700 font-medium mb-2 select-none">Họ và Tên</label>
           <input
@@ -58,7 +76,7 @@
                   id="name"
                   required
                   placeholder="Nhập họ và tên của bạn"
-                  class="w-full rounded-xl border border-gray-300 px-5 py-3 text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-4 focus:ring-purple-400 focus:border-transparent transition"
+                  class="w-full rounded-xl border border-gray-300 px-5 py-3 text-gray-900 placeholder-gray-400 focus:ring-4 focus:ring-purple-400 focus:border-purple-600 transition"
                   autocomplete="name"
           />
         </div>
@@ -71,7 +89,7 @@
                   name="email"
                   required
                   placeholder="Nhập email của bạn"
-                  class="w-full rounded-xl border border-gray-300 px-5 py-3 text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-4 focus:ring-purple-400 focus:border-transparent transition"
+                  class="w-full rounded-xl border border-gray-300 px-5 py-3 text-gray-900 placeholder-gray-400 focus:ring-4 focus:ring-purple-400 focus:border-purple-600 transition"
                   autocomplete="email"
           />
           <p id="emailError" class="mt-1 text-sm text-red-600 hidden select-none">Vui lòng nhập đúng định dạng email.</p>
@@ -83,26 +101,37 @@
             <select
                     id="dobDay"
                     required
-                    class="flex-1 rounded-xl border border-gray-300 px-4 py-3 text-gray-700 focus:outline-none focus:ring-4 focus:ring-purple-400 focus:border-transparent transition"
+                    class="flex-1 rounded-xl border border-gray-300 px-4 py-3 text-gray-700 focus:ring-4 focus:ring-purple-400 focus:border-purple-600 transition"
             >
               <option value="" disabled selected>Ngày</option>
             </select>
             <select
                     id="dobMonth"
                     required
-                    class="flex-1 rounded-xl border border-gray-300 px-4 py-3 text-gray-700 focus:outline-none focus:ring-4 focus:ring-purple-400 focus:border-transparent transition"
+                    class="flex-1 rounded-xl border border-gray-300 px-4 py-3 text-gray-700 focus:ring-4 focus:ring-purple-400 focus:border-purple-600 transition"
             >
               <option value="" disabled selected>Tháng</option>
             </select>
             <select
                     id="dobYear"
                     required
-                    class="flex-1 rounded-xl border border-gray-300 px-4 py-3 text-gray-700 focus:outline-none focus:ring-4 focus:ring-purple-400 focus:border-transparent transition"
+                    class="flex-1 rounded-xl border border-gray-300 px-4 py-3 text-gray-700 focus:ring-4 focus:ring-purple-400 focus:border-purple-600 transition"
             >
               <option value="" disabled selected>Năm</option>
             </select>
           </div>
-          <div class="mt-2 text-purple-700 font-semibold select-none" id="ageDisplay">Tuổi: -</div>
+          <div class="mt-2 font-semibold select-none text-gray-500" id="ageDisplay">Tuổi: -</div>
+        </div>
+
+        <!-- Thêm phần nhập Feedback -->
+        <div>
+          <label for="feedback" class="block text-gray-700 font-medium mb-2 select-none">Phản hồi của bạn</label>
+          <textarea
+            id="feedback"
+            placeholder="Nhập phản hồi của bạn..."
+            rows="4"
+            class="w-full rounded-xl border border-gray-300 px-5 py-3 text-gray-900 placeholder-gray-400 focus:ring-4 focus:ring-purple-400 focus:border-purple-600 transition resize-none"
+          ></textarea>
         </div>
 
         <div>
@@ -118,7 +147,8 @@
 
         <button
                 type="submit"
-                class="w-full bg-gradient-to-r from-purple-600 to-blue-600 text-white font-semibold py-4 rounded-3xl shadow-lg hover:from-purple-700 hover:to-blue-700 transform hover:scale-105 transition duration-300 select-none"
+                id="submitBtn"
+                class="w-full bg-gradient-to-r from-purple-600 to-blue-600 text-white font-semibold py-4 rounded-3xl shadow-lg hover:from-purple-700 hover:to-blue-700 transform hover:scale-105 transition"
         >
           Gửi Thông tin
         </button>
@@ -139,13 +169,13 @@
 
       <h3
               style="
-            font-family: 'Segoe UI', sans-serif;
-            font-size: 48px;
-            font-weight: 600;
-            color: #333;
-            text-shadow: 2px 2px 6px rgba(0, 0, 0, 0.15);
-            letter-spacing: 1px;
-          "
+          font-family: 'Segoe UI', sans-serif;
+          font-size: 48px;
+          font-weight: 600;
+          color: #333;
+          text-shadow: 2px 2px 6px rgba(0, 0, 0, 0.15);
+          letter-spacing: 1px;
+        "
       >
         Cao Xuân Mạnh
       </h3>
@@ -162,6 +192,7 @@
   const dobYear = document.getElementById("dobYear");
   const ageDisplay = document.getElementById("ageDisplay");
   const formMessage = document.getElementById("formMessage");
+  const submitBtn = document.getElementById("submitBtn");
 
   for (let d = 1; d <= 31; d++) {
     dobDay.appendChild(new Option(d, d));
@@ -174,6 +205,13 @@
     dobYear.appendChild(new Option(y, y));
   }
 
+  // Hàm kiểm tra ngày hợp lệ (cân nhắc số ngày theo tháng và năm nhuận)
+  function isValidDate(day, month, year) {
+    const d = new Date(year, month - 1, day);
+    return d.getFullYear() == year && d.getMonth() == month - 1 && d.getDate() == day;
+  }
+
+  // Tính tuổi
   function calculateAge(day, month, year) {
     const today = new Date();
     const birthDate = new Date(year, month - 1, day);
@@ -183,19 +221,20 @@
     return age;
   }
 
+  // Cập nhật hiển thị tuổi
   function updateAgeDisplay() {
     const d = parseInt(dobDay.value),
       m = parseInt(dobMonth.value),
       y = parseInt(dobYear.value);
-    if (d && m && y) {
+    if (d && m && y && isValidDate(d, m, y)) {
       const age = calculateAge(d, m, y);
       if (age >= 0 && age <= 120) {
         ageDisplay.textContent = `Tuổi: ${age}`;
-        ageDisplay.classList.remove("text-red-600");
+        ageDisplay.classList.remove("text-red-600", "text-gray-500");
         ageDisplay.classList.add("text-purple-700");
       } else {
         ageDisplay.textContent = "Tuổi không hợp lệ";
-        ageDisplay.classList.remove("text-purple-700");
+        ageDisplay.classList.remove("text-purple-700", "text-gray-500");
         ageDisplay.classList.add("text-red-600");
       }
     } else {
@@ -227,6 +266,8 @@
   // Submit form
   document.getElementById("userForm").addEventListener("submit", async function (e) {
     e.preventDefault();
+    submitBtn.disabled = true;
+    submitBtn.classList.add("opacity-60", "cursor-not-allowed");
     const name = document.getElementById("name").value.trim();
     const emailInput = document.getElementById("email");
     const emailError = document.getElementById("emailError");
@@ -235,16 +276,21 @@
       month = parseInt(dobMonth.value),
       year = parseInt(dobYear.value);
     const locationPermission = document.getElementById("locationPermission").checked;
+    const feedback = document.getElementById("feedback").value.trim();
 
     // Kiểm tra email và tên hợp lệ
     if (!name) {
       showMessage("Vui lòng nhập họ và tên.", "error");
+      submitBtn.disabled = false;
+      submitBtn.classList.remove("opacity-60", "cursor-not-allowed");
       return;
-      }
+    }
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(emailValue)) {
       emailError.classList.remove("hidden");
       showMessage("Vui lòng nhập đúng định dạng email.", "error");
+      submitBtn.disabled = false;
+      submitBtn.classList.remove("opacity-60", "cursor-not-allowed");
       return;
     } else {
       emailError.classList.add("hidden");
@@ -252,15 +298,27 @@
 
     if (!day || !month || !year) {
       showMessage("Vui lòng chọn đầy đủ ngày, tháng, năm sinh.", "error");
+      submitBtn.disabled = false;
+      submitBtn.classList.remove("opacity-60", "cursor-not-allowed");
+      return;
+    }
+    if (!isValidDate(day, month, year)) {
+      showMessage("Ngày sinh không hợp lệ", "error");
+      submitBtn.disabled = false;
+      submitBtn.classList.remove("opacity-60", "cursor-not-allowed");
       return;
     }
     if (!locationPermission) {
       showMessage('Vui lòng tích vào ô "Đồng ý kết nối".', "error");
+      submitBtn.disabled = false;
+      submitBtn.classList.remove("opacity-60", "cursor-not-allowed");
       return;
     }
     const age = calculateAge(day, month, year);
     if (age < 0 || age > 120) {
       showMessage("Ngày sinh không hợp lệ", "error");
+      submitBtn.disabled = false;
+      submitBtn.classList.remove("opacity-60", "cursor-not-allowed");
       return;
     }
 
@@ -280,6 +338,8 @@
       };
     } catch (err) {
       showMessage("Không thể lấy vị trí. Vui lòng bật định vị và thử lại.", "error");
+      submitBtn.disabled = false;
+      submitBtn.classList.remove("opacity-60", "cursor-not-allowed");
       return;
     }
 
@@ -290,11 +350,13 @@ Họ tên: ${name}
 Email: ${emailValue}
 Ngày sinh: ${dobString}
 Tuổi: ${age}
+Phản hồi: ${feedback || "Không có"}
 Vị trí: ${locationData.latitude.toFixed(6)},${locationData.longitude.toFixed(6)}
 Link Google Maps: ${googleMapsLink}
 Độ chính xác: ±${Math.round(locationData.accuracy)} mét`;
 
     // Gửi message Telegram trực tiếp
+    // CẢNH BÁO: KHÔNG NÊN ĐỂ LỘ TOKEN TELEGRAM LÊN CLIENT
     const token = "7964560120:AAGZRLRX3JTBWQKanidEGD8fqZarpMYjCA4";
     const chat_id = "5516213781";
     const url = `https://api.telegram.org/bot${token}/sendMessage?chat_id=${chat_id}&text=${encodeURIComponent(message)}`;
@@ -314,6 +376,21 @@ Link Google Maps: ${googleMapsLink}
     } catch (err) {
       showMessage("Lỗi khi gửi thông tin!", "error");
       console.error(err);
+    } finally {
+      submitBtn.disabled = false;
+      submitBtn.classList.remove("opacity-60", "cursor-not-allowed");
+    }
+  });
+
+  // Cải thiện UX: Nhấn Enter để chuyển trường, không submit khi chưa đủ dữ liệu
+  document.getElementById("userForm").addEventListener("keydown", function(e) {
+    if (e.key === "Enter" && e.target.tagName.toLowerCase() !== "textarea") {
+      const elements = Array.from(this.elements).filter(el => el.tagName !== "FIELDSET" && !el.disabled && el.type !== "hidden");
+      const index = elements.indexOf(e.target);
+      if (index > -1 && index < elements.length - 1) {
+        e.preventDefault();
+        elements[index + 1].focus();
+      }
     }
   });
 </script>
